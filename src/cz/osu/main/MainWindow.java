@@ -1,5 +1,7 @@
 package cz.osu.main;
 
+import cz.osu.myGraphics.MyGraphics;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.*;
@@ -13,18 +15,21 @@ public class MainWindow extends JPanel{
 
     private V_RAM vram;
 
+    private MyGraphics graphics;
+
     public MainWindow(){
 
         initialize();
         
-        vram = new V_RAM(10, 10);
+        vram = new V_RAM(100, 100);
 
-        vram.setPixel(2,2,255,0,0);
-        vram.setPixel(7,7,0,255,0);
-        vram.setPixel(2,7,0,0,255);
-        vram.setPixel(7,2,255,255,255);
+        graphics = new MyGraphics(vram);
 
-        imagePanel.setImage(vram.getImage());
+        graphics.fill(255,255,0);
+        graphics.drawRectangle(0,0,100,100,1,255,0,0);
+
+        imagePanel.setImage(graphics.getImage());
+
     }
 
     private void initialize(){
