@@ -21,14 +21,6 @@ public class MainWindow extends JPanel{
 
         initialize();
         
-        vram = new V_RAM(100, 100);
-
-        graphics = new MyGraphics(vram);
-
-        graphics.fill(255,255,0);
-        graphics.drawRectangle(0,0,100,100,1,255,0,0);
-
-        imagePanel.setImage(graphics.getImage());
 
     }
 
@@ -92,7 +84,11 @@ public class MainWindow extends JPanel{
 
                 if(temp != null){
 
-                    imagePanel.setImage(temp);
+                    vram = new V_RAM(temp);
+
+                    MyGraphics.grayScale(vram);
+
+                    imagePanel.setImage(vram.getImage());
 
                 }else {
 

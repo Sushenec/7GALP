@@ -16,6 +16,19 @@ public class V_RAM {
         rawData = new int[height][width];
     }
 
+    public V_RAM(BufferedImage sourceImage){
+
+        this.height = sourceImage.getHeight();
+        this.width = sourceImage.getWidth();
+        rawData = new int[height][width];
+
+        for(int y = 0; y < height; y++){
+            for(int x = 0; x < width; x++){
+                rawData[y][x] = sourceImage.getRGB(x, y);
+            }
+        }
+    }
+
     public int getWidth(){
 
         return width;
