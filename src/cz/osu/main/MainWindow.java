@@ -86,7 +86,7 @@ public class MainWindow extends JPanel{
 
                     vram = new V_RAM(temp);
 
-                    MyGraphics.grayScale(vram);
+                    MyGraphics.invertColors(vram);
 
                     imagePanel.setImage(vram.getImage());
 

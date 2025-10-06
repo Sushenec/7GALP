@@ -25,6 +25,7 @@ public class MyGraphics {
 
         for(int _x = x; _x < width + x; _x++){
             for(int border = 0; border < borderSize; border++){
+
                 vram.setPixel(_x, y + border, red, green, blue);
                 vram.setPixel(_x, y + height - border - 1, red, green, blue); // -1 je protože indexujeme od nuly a height je číslo, které je se počítá od jedničky
             }
@@ -32,6 +33,7 @@ public class MyGraphics {
 
         for(int _y = y; _y < height + y; _y++){
             for(int border = 0; border < borderSize; border++){
+
                 vram.setPixel(x + border, _y, red, green ,blue);
                 vram.setPixel(x + width - border - 1, _y, red, green, blue); // -1 je protože indexujeme od nuly a height je číslo, které je se počítá od jedničky
             }
@@ -40,6 +42,7 @@ public class MyGraphics {
 
     // Changes vram content to grayscale
     public static void grayScale(V_RAM vram){
+
         for(int y = 0; y < vram.getHeight(); y++){
             for(int x = 0; x < vram.getWidth(); x++){
 
@@ -57,6 +60,21 @@ public class MyGraphics {
 
     // Decomposes ARGB integer into its components
     public static RGB getRGB(int argb){
-        return new RGB((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, (argb >> 16) & 0xFF);
+
+        return new RGB((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+    }
+
+    // Inverts colors in image
+    public static void invertColors(V_RAM vram){
+
+        for(int y = 0; y < vram.getHeight(); y++){
+            for(int x = 0; x < vram.getWidth(); x++){
+
+                RGB pixel = getRGB(vram.getPixel(x, y));
+
+                vram.setPixel(x, y, (255 - pixel.red), (255 - pixel.green), (255 - pixel.blue));
+
+            }
+        }
     }
 }
