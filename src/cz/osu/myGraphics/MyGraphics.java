@@ -112,6 +112,7 @@ public class MyGraphics {
 
                     vram.setPixel(x + 1, y, newLightness, newLightness, newLightness);
                 }
+
                 //error distribution bottom pixel
                 if((y + 1) < vram.getHeight()){
                     int currentLightness = getRGB(vram.getPixel(x, y + 1)).red;
@@ -120,6 +121,7 @@ public class MyGraphics {
 
                     vram.setPixel(x, y + 1, newLightness, newLightness, newLightness);
                 }
+
                 //error distribution bottom-right pixel
                 if(((y + 1) < vram.getHeight()) && ((x + 1) < vram.getWidth())){
                     int currentLightness = getRGB(vram.getPixel(x + 1, y + 1)).red;
@@ -128,6 +130,22 @@ public class MyGraphics {
 
                     vram.setPixel(x + 1, y + 1, newLightness, newLightness, newLightness);
                 }
+            }
+        }
+    }
+
+    //shifts hue in HSL model by shiftDegree ammount
+    public static void hueShift(V_RAM vram, int shiftDegree){
+        for(int y = 0; y < vram.getHeight(); y++){
+            for(int x = 0; x < vram.getWidth(); x++){
+
+                RGB pixel = getRGB(vram.getPixel(x ,y));
+                HSL color = new HSL(pixel);
+
+                color.hue = (color.hue + shiftDegree + 360) % 360;
+
+                RGB newPixel = new RGB(color);
+                vram.setPixel(x, y, newPixel.red, newPixel.green, newPixel.blue);
             }
         }
     }

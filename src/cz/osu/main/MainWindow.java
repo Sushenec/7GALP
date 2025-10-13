@@ -86,7 +86,7 @@ public class MainWindow extends JPanel{
 
                     vram = new V_RAM(temp);
 
-                    MyGraphics.errorDistributionDithering(vram);
+                    MyGraphics.hueShift(vram, -90);
 
                     imagePanel.setImage(vram.getImage());
 
