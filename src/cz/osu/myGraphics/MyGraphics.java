@@ -149,4 +149,40 @@ public class MyGraphics {
             }
         }
     }
+
+    public static void convolution(V_RAM vram, Kernel kernel){
+        V_RAM source = vram.copy();
+
+        //for every pixel except border pixels
+        for(int y = 0; y < vram.getHeight(); y++) {
+            for (int x = 0; x < vram.getWidth(); x++) {
+
+                //kernel calculation
+                int sumR = 0;
+                int sumG = 0;
+                int sumB = 0;
+                for(int yK = 0; yK < kernel.height; yK++){
+                    for(int xK = 0; xK < kernel.width; xK++){
+                        int targetX = x + xK - kernel.width / 2;
+                        int targetY = y + yK - kernel.height / 2;
+
+                        targetX = Math.clamp(targetX, 0, source.getWidth() - 1);
+                        targetY = Math.clamp(targetY, 0, source.getHeight() - 1);
+
+                        RGB pixel = getRGB(source.getPixel(targetX, targetY));
+
+                        sumR += kernel.kernel[yK][xK] * pixel.red;
+                        sumG += kernel.kernel[yK][xK] * pixel.green;
+                        sumB += kernel.kernel[yK][xK] * pixel.blue;
+                    }
+                }
+
+                sumR /= kernel.divider;
+                sumG /= kernel.divider;
+                sumB /= kernel.divider;
+
+                vram.setPixel(x, y, sumR, sumG, sumB);
+            }
+        }
+    }
 }

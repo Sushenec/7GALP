@@ -1,5 +1,6 @@
 package cz.osu.main;
 
+import cz.osu.myGraphics.Kernel;
 import cz.osu.myGraphics.MyGraphics;
 
 import javax.imageio.ImageIO;
@@ -86,7 +87,11 @@ public class MainWindow extends JPanel{
 
                     vram = new V_RAM(temp);
 
-                    MyGraphics.hueShift(vram, -90);
+                    Kernel k = Kernel.createBlurKernel(3);
+
+                    MyGraphics.convolution(vram, k);
+                    MyGraphics.convolution(vram, k);
+                    MyGraphics.convolution(vram, k);
 
                     imagePanel.setImage(vram.getImage());
 

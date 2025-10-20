@@ -66,4 +66,16 @@ public class V_RAM {
 
         return image;
     }
+
+    public V_RAM copy(){
+        V_RAM newVram = new V_RAM(this.width, this.height);
+
+        for(int y = 0; y < this.getHeight(); y++){
+            for(int x = 0; x < this.getWidth(); x++){
+                newVram.rawData[y][x] = this.rawData[y][x];
+            }
+        }
+
+        return newVram;
+    }
 }
