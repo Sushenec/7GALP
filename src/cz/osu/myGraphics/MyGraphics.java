@@ -104,31 +104,23 @@ public class MyGraphics {
                     error = lightness - 255;
                 }
 
-                //error distribution right pixel
-                if((x + 1) < vram.getWidth()){
-                    int currentLightness = getRGB(vram.getPixel(x + 1, y)).red;
-                    int adjustedError = (int)Math.round( error * errorDistributionMatrix[1][0]);
-                    int newLightness = Math.clamp((adjustedError + currentLightness), 0 ,255);
+                //error distributing
+                for(int yMatrix = 0; yMatrix < errorDistributionMatrix.length; yMatrix++){
+                    for(int xMatrix = 0; xMatrix < errorDistributionMatrix[yMatrix].length; xMatrix++){
+                        if(yMatrix == 0 && xMatrix == 0){
+                            continue;
+                        }
 
-                    vram.setPixel(x + 1, y, newLightness, newLightness, newLightness);
-                }
+                        int targetX = Math.clamp(x + xMatrix,0 , vram.getWidth() - 1);
+                        int targetY = Math.clamp(y + yMatrix,0 , vram.getHeight() - 1);
 
-                //error distribution bottom pixel
-                if((y + 1) < vram.getHeight()){
-                    int currentLightness = getRGB(vram.getPixel(x, y + 1)).red;
-                    int adjustedError = (int)Math.round( error * errorDistributionMatrix[0][1]);
-                    int newLightness = Math.clamp((adjustedError + currentLightness), 0 ,255);
+                        int currentLightness = getRGB(vram.getPixel(targetX, targetY)).red;
+                        int adjustedError = (int)Math.round( error * errorDistributionMatrix[yMatrix][xMatrix]);
+                        int newLightness = Math.clamp((adjustedError + currentLightness), 0 ,255);
 
-                    vram.setPixel(x, y + 1, newLightness, newLightness, newLightness);
-                }
+                        vram.setPixel(targetX, targetY, newLightness, newLightness, newLightness);
 
-                //error distribution bottom-right pixel
-                if(((y + 1) < vram.getHeight()) && ((x + 1) < vram.getWidth())){
-                    int currentLightness = getRGB(vram.getPixel(x + 1, y + 1)).red;
-                    int adjustedError = (int)Math.round( error * errorDistributionMatrix[1][1]);
-                    int newLightness = Math.clamp((adjustedError + currentLightness), 0 ,255);
-
-                    vram.setPixel(x + 1, y + 1, newLightness, newLightness, newLightness);
+                    }
                 }
             }
         }

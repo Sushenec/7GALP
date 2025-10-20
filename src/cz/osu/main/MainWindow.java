@@ -89,9 +89,7 @@ public class MainWindow extends JPanel{
 
                     Kernel k = Kernel.createBlurKernel(3);
 
-                    MyGraphics.convolution(vram, k);
-                    MyGraphics.convolution(vram, k);
-                    MyGraphics.convolution(vram, k);
+                    MyGraphics.errorDistributionDithering(vram);
 
                     imagePanel.setImage(vram.getImage());
 
