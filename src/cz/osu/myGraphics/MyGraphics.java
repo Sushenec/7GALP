@@ -145,7 +145,7 @@ public class MyGraphics {
     public static void convolution(V_RAM vram, Kernel kernel){
         V_RAM source = vram.copy();
 
-        //for every pixel except border pixels
+
         for(int y = 0; y < vram.getHeight(); y++) {
             for (int x = 0; x < vram.getWidth(); x++) {
 
@@ -176,5 +176,60 @@ public class MyGraphics {
                 vram.setPixel(x, y, sumR, sumG, sumB);
             }
         }
+    }
+
+    public static V_RAM scaleDown(V_RAM vram, double ratio){
+        //ratio = <0,1>
+        int scaledWidth = (int)(vram.getWidth() * ratio);
+        int scaledHeight = (int)(vram.getHeight() * ratio);
+        V_RAM scaledVram = new V_RAM(scaledWidth, scaledHeight);
+
+//        for(int y = 0; y < scaledVram.getHeight(); y++) {
+//            for (int x = 0; x < scaledVram.getWidth(); x++) {
+//
+//                RGB pixel = getRGB(vram.getPixel((int)(x / ratio),(int)(y / ratio)));
+//
+//                scaledVram.setPixel(x, y, pixel.red, pixel.green, pixel.blue);
+//            }
+//        }
+
+        Kernel kernel = Kernel.createBlurKernel((int)(1/ratio));
+
+        for(int y = 0; y < scaledVram.getHeight(); y++) {
+            for (int x = 0; x < scaledVram.getWidth(); x++) {
+
+                //kernel calculation
+                int sumR = 0;
+                int sumG = 0;
+                int sumB = 0;
+
+                for(int yK = 0; yK < kernel.height; yK++){
+                    for(int xK = 0; xK < kernel.width; xK++){
+
+                        int targetX = ((int)(x / ratio) + (kernel.width / 2)) + xK - kernel.width / 2;
+                        int targetY = ((int)(y / ratio) + (kernel.height / 2)) + yK - kernel.height / 2;
+
+                        targetX = Math.clamp(targetX, 0, vram.getWidth() - 1);
+                        targetY = Math.clamp(targetY, 0, vram.getHeight() - 1);
+
+                        RGB pixel = getRGB(vram.getPixel(targetX, targetY));
+
+                        sumR += kernel.kernel[yK][xK] * pixel.red;
+                        sumG += kernel.kernel[yK][xK] * pixel.green;
+                        sumB += kernel.kernel[yK][xK] * pixel.blue;
+                    }
+                }
+
+                sumR /= kernel.divider;
+                sumG /= kernel.divider;
+                sumB /= kernel.divider;
+
+                scaledVram.setPixel(x, y, sumR, sumG, sumB);
+            }
+        }
+
+
+        return scaledVram;
+
     }
 }
