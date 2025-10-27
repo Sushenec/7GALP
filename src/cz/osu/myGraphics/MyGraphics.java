@@ -46,7 +46,7 @@ public class MyGraphics {
         for(int y = 0; y < vram.getHeight(); y++){
             for(int x = 0; x < vram.getWidth(); x++){
 
-                RGB pixel = getRGB(vram.getPixel(x,y));
+                RGB pixel = new RGB(vram.getPixel(x,y));
                 //int lightness = (pixel.red + pixel.green + pixel.blue) / 3;
 
                 //Vážený průměr RGB -> lepší vyjádření jasů pro lidksé oko
@@ -58,19 +58,13 @@ public class MyGraphics {
         }
     }
 
-    // Decomposes ARGB integer into its components (doest return alfa chanel)
-    public static RGB getRGB(int argb){
-
-        return new RGB((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
-    }
-
     // Inverts colors in image
     public static void invertColors(V_RAM vram){
 
         for(int y = 0; y < vram.getHeight(); y++){
             for(int x = 0; x < vram.getWidth(); x++){
 
-                RGB pixel = getRGB(vram.getPixel(x, y));
+                RGB pixel = new RGB(vram.getPixel(x, y));
 
                 vram.setPixel(x, y, (255 - pixel.red), (255 - pixel.green), (255 - pixel.blue));
 
@@ -90,7 +84,7 @@ public class MyGraphics {
         for(int y = 0; y < vram.getHeight(); y++){
             for(int x = 0; x < vram.getWidth(); x++){
 
-                int lightness = getRGB(vram.getPixel(x, y)).red;
+                int lightness = new RGB(vram.getPixel(x, y)).red;
                 int error = 0;
 
                 //fixed threshold dithering
@@ -114,7 +108,7 @@ public class MyGraphics {
                         int targetX = Math.clamp(x + xMatrix,0 , vram.getWidth() - 1);
                         int targetY = Math.clamp(y + yMatrix,0 , vram.getHeight() - 1);
 
-                        int currentLightness = getRGB(vram.getPixel(targetX, targetY)).red;
+                        int currentLightness = new RGB(vram.getPixel(targetX, targetY)).red;
                         int adjustedError = (int)Math.round( error * errorDistributionMatrix[yMatrix][xMatrix]);
                         int newLightness = Math.clamp((adjustedError + currentLightness), 0 ,255);
 
@@ -131,7 +125,7 @@ public class MyGraphics {
         for(int y = 0; y < vram.getHeight(); y++){
             for(int x = 0; x < vram.getWidth(); x++){
 
-                RGB pixel = getRGB(vram.getPixel(x ,y));
+                RGB pixel = new RGB(vram.getPixel(x ,y));
                 HSL color = new HSL(pixel);
 
                 color.hue = (color.hue + shiftDegree + 360) % 360;
@@ -161,7 +155,7 @@ public class MyGraphics {
                         targetX = Math.clamp(targetX, 0, source.getWidth() - 1);
                         targetY = Math.clamp(targetY, 0, source.getHeight() - 1);
 
-                        RGB pixel = getRGB(source.getPixel(targetX, targetY));
+                        RGB pixel = new RGB(source.getPixel(targetX, targetY));
 
                         sumR += kernel.kernel[yK][xK] * pixel.red;
                         sumG += kernel.kernel[yK][xK] * pixel.green;
@@ -184,50 +178,27 @@ public class MyGraphics {
         int scaledHeight = (int)(vram.getHeight() * ratio);
         V_RAM scaledVram = new V_RAM(scaledWidth, scaledHeight);
 
-//        for(int y = 0; y < scaledVram.getHeight(); y++) {
-//            for (int x = 0; x < scaledVram.getWidth(); x++) {
-//
-//                RGB pixel = getRGB(vram.getPixel((int)(x / ratio),(int)(y / ratio)));
-//
-//                scaledVram.setPixel(x, y, pixel.red, pixel.green, pixel.blue);
-//            }
-//        }
+        int[][][] map = new int[scaledHeight][scaledWidth][4];
 
-        Kernel kernel = Kernel.createBlurKernel((int)(1/ratio));
+        for(int y = 0; y < vram.getHeight(); y++) {
+            for (int x = 0; x < vram.getWidth(); x++) {
+                int targetX = Math.clamp((int)(x * ratio), 0, scaledWidth - 1);
+                int targetY = Math.clamp((int)(y * ratio), 0, scaledHeight - 1);
 
-        for(int y = 0; y < scaledVram.getHeight(); y++) {
-            for (int x = 0; x < scaledVram.getWidth(); x++) {
+                map[targetY][targetX][0] += new RGB(vram.getPixel(x, y)).red;
+                map[targetY][targetX][1] += new RGB(vram.getPixel(x, y)).green;
+                map[targetY][targetX][2] += new RGB(vram.getPixel(x, y)).blue;
 
-                //kernel calculation
-                int sumR = 0;
-                int sumG = 0;
-                int sumB = 0;
+                map[targetY][targetX][3]++;
 
-                for(int yK = 0; yK < kernel.height; yK++){
-                    for(int xK = 0; xK < kernel.width; xK++){
-
-                        int targetX = ((int)(x / ratio) + (kernel.width / 2)) + xK - kernel.width / 2;
-                        int targetY = ((int)(y / ratio) + (kernel.height / 2)) + yK - kernel.height / 2;
-
-                        targetX = Math.clamp(targetX, 0, vram.getWidth() - 1);
-                        targetY = Math.clamp(targetY, 0, vram.getHeight() - 1);
-
-                        RGB pixel = getRGB(vram.getPixel(targetX, targetY));
-
-                        sumR += kernel.kernel[yK][xK] * pixel.red;
-                        sumG += kernel.kernel[yK][xK] * pixel.green;
-                        sumB += kernel.kernel[yK][xK] * pixel.blue;
-                    }
-                }
-
-                sumR /= kernel.divider;
-                sumG /= kernel.divider;
-                sumB /= kernel.divider;
-
-                scaledVram.setPixel(x, y, sumR, sumG, sumB);
             }
         }
 
+        for(int y = 0; y < scaledHeight; y++){
+            for(int x = 0; x <scaledWidth; x++){
+                scaledVram.setPixel(x, y, map[y][x][0] / map[y][x][3], map[y][x][1] / map[y][x][3], map[y][x][2] / map[y][x][3]);
+            }
+        }
 
         return scaledVram;
 

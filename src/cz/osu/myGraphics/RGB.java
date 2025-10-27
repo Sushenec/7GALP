@@ -17,6 +17,12 @@ public class RGB {
         this.blue = blue;
     }
 
+    public RGB(int argb){
+        this.red = (argb >> 16) & 0xFF;
+        this.green = (argb >> 8) & 0xFF;
+        this.blue = argb & 0xFF;
+    }
+
     public RGB(HSL hsl){
         float saturation = hsl.saturation / 100f;
         float lightness = hsl.lightness / 100f;
