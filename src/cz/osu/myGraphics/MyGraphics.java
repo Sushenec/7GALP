@@ -203,4 +203,61 @@ public class MyGraphics {
         return scaledVram;
 
     }
+
+    public static V_RAM scaleUp(V_RAM vram, double ratio){
+        //ratio = <1, inf>
+        //bilinear interpolation
+        int scaledWidth = (int)(vram.getWidth() * ratio);
+        int scaledHeight = (int)(vram.getHeight() * ratio);
+        V_RAM scaledVram = new V_RAM(scaledWidth, scaledHeight);
+
+        for(int y = 0; y < scaledVram.getHeight(); y++){
+            for(int x = 0; x < scaledVram.getWidth(); x++){
+                double sourceX = x / ratio;
+                double sourceY = y / ratio;
+
+                int westSourceX = Math.clamp((int)Math.floor(sourceX), 0, vram.getWidth() - 1);
+                int eastSourceX = Math.min(westSourceX + 1, vram.getWidth() - 1);
+                int northSourceY = Math.clamp((int)Math.floor(sourceY), 0, vram.getHeight() - 1);
+                int southSourceY = Math.min(northSourceY + 1, vram.getHeight() - 1);
+
+                double distanceLeftX = sourceX - westSourceX;
+                double distanceUpY = sourceY - northSourceY;
+
+                RGB northWestPixel = new RGB(vram.getPixel(westSourceX, northSourceY));
+                RGB northEastPixel = new RGB(vram.getPixel(eastSourceX, northSourceY));
+                RGB southWestPixel = new RGB(vram.getPixel(westSourceX, southSourceY));
+                RGB southEastPixel = new RGB(vram.getPixel(eastSourceX, southSourceY));
+
+                RGB pixel = new RGB(0);
+
+                pixel.red = (int)(northWestPixel.red * (1 - distanceLeftX) * (1 - distanceUpY) +
+                                  northEastPixel.red * distanceLeftX * (1 - distanceUpY) +
+                                  southWestPixel.red * (1 - distanceLeftX) * distanceUpY +
+                                  southEastPixel.red * distanceLeftX * distanceUpY);
+
+                pixel.green = (int)(northWestPixel.green * (1 - distanceLeftX) * (1 - distanceUpY) +
+                                    northEastPixel.green * distanceLeftX * (1 - distanceUpY) +
+                                    southWestPixel.green * (1 - distanceLeftX) * distanceUpY +
+                                    southEastPixel.green * distanceLeftX * distanceUpY);
+
+                pixel.blue = (int)(northWestPixel.blue * (1 - distanceLeftX) * (1 - distanceUpY) +
+                                   northEastPixel.blue * distanceLeftX * (1 - distanceUpY) +
+                                   southWestPixel.blue * (1 - distanceLeftX) * distanceUpY +
+                                   southEastPixel.blue * distanceLeftX * distanceUpY);
+
+                scaledVram.setPixel(x, y, pixel.red, pixel.green, pixel.blue);
+            }
+        }
+
+        return scaledVram;
+    }
+
+    public static V_RAM scale(V_RAM vram, double ratio){
+        if(ratio < 1){
+            return scaleDown(vram, ratio);
+        }else{
+            return scaleUp(vram, ratio);
+        }
+    }
 }

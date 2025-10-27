@@ -89,7 +89,7 @@ public class MainWindow extends JPanel{
 
                     Kernel k = Kernel.createBlurKernel(3);
 
-                    vram = MyGraphics.scaleDown(vram, 0.2);
+                    vram = MyGraphics.scale(vram, 1.1);
 
                     imagePanel.setImage(vram.getImage());
 
