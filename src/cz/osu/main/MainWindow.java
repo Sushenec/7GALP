@@ -7,8 +7,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 
 public class MainWindow extends JPanel{
 
@@ -60,6 +63,24 @@ public class MainWindow extends JPanel{
             }
         });
         this.add(button4);
+
+        JFormattedTextField numberInput = new JFormattedTextField(NumberFormat.getNumberInstance());
+        numberInput.setBounds(290, 10, 120, 30);
+        numberInput.addPropertyChangeListener("value", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                Number value = (Number) numberInput.getValue();
+
+                if(value != null){
+                    double number = value.doubleValue();
+
+                    //My graphics
+                    imagePanel.setImage(vram.getImage());
+                }
+
+            }
+        });
+        this.add(numberInput);
 
         JFrame frame = new JFrame("Raster Graphics");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
