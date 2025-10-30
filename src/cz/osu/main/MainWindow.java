@@ -18,6 +18,7 @@ public class MainWindow extends JPanel{
     private ImagePanel imagePanel;
 
     private V_RAM vram;
+    private V_RAM bufferVram;
 
     private MyGraphics graphics;
 
@@ -73,7 +74,7 @@ public class MainWindow extends JPanel{
 
                 if(value != null){
                     double number = value.doubleValue();
-
+                    vram = bufferVram.copy();
                     //My graphics
                     imagePanel.setImage(vram.getImage());
                 }
@@ -107,6 +108,7 @@ public class MainWindow extends JPanel{
                 if(temp != null){
 
                     vram = new V_RAM(temp);
+                    bufferVram = vram.copy();
 
                     Kernel k = Kernel.createBlurKernel(3);
 
