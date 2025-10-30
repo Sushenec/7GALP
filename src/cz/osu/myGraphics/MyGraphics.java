@@ -47,7 +47,6 @@ public class MyGraphics {
             for(int x = 0; x < vram.getWidth(); x++){
 
                 RGB pixel = new RGB(vram.getPixel(x,y));
-                //int lightness = (pixel.red + pixel.green + pixel.blue) / 3;
 
                 //Vážený průměr RGB -> lepší vyjádření jasů pro lidksé oko
                 int lightness = (int)Math.round(0.299 * pixel.red + 0.587 * pixel.green + 0.114 * pixel.blue);
@@ -139,14 +138,11 @@ public class MyGraphics {
     public static void convolution(V_RAM vram, Kernel kernel){
         V_RAM source = vram.copy();
 
-
         for(int y = 0; y < vram.getHeight(); y++) {
             for (int x = 0; x < vram.getWidth(); x++) {
 
                 //kernel calculation
-                int sumR = 0;
-                int sumG = 0;
-                int sumB = 0;
+                RGB sum = new RGB(0);
                 for(int yK = 0; yK < kernel.height; yK++){
                     for(int xK = 0; xK < kernel.width; xK++){
                         int targetX = x + xK - kernel.width / 2;
@@ -157,17 +153,18 @@ public class MyGraphics {
 
                         RGB pixel = new RGB(source.getPixel(targetX, targetY));
 
-                        sumR += kernel.kernel[yK][xK] * pixel.red;
-                        sumG += kernel.kernel[yK][xK] * pixel.green;
-                        sumB += kernel.kernel[yK][xK] * pixel.blue;
+                        sum.red += kernel.kernel[yK][xK] * pixel.red;
+                        sum.green += kernel.kernel[yK][xK] * pixel.green;
+                        sum.blue += kernel.kernel[yK][xK] * pixel.blue;
                     }
                 }
 
-                sumR /= kernel.divider;
-                sumG /= kernel.divider;
-                sumB /= kernel.divider;
+                sum.red /= kernel.divider;
+                sum.green /= kernel.divider;
+                sum.blue /= kernel.divider;
 
-                vram.setPixel(x, y, sumR, sumG, sumB);
+
+                vram.setPixel(x, y, sum.red, sum.green, sum.blue);
             }
         }
     }
