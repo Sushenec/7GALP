@@ -257,4 +257,71 @@ public class MyGraphics {
             return scaleUp(vram, ratio);
         }
     }
+
+    public static void drawLine(V_RAM vram, int x1, int y1, int x2, int y2){
+        //DDA
+        //x2 > x1
+        //y2 > y1
+
+        if(x1 == x2 && y1 == y2){
+            //draw pixel
+            return;
+        }
+
+
+        if(y1 == y2){
+            //horizontal line
+            return;
+        }
+
+
+        if(x1 == x2){
+            //vertical line
+            return;
+        }
+
+        int dx = x2 - x1;
+        int dy = y2 - y1;
+
+        if(Math.abs(dx) == Math.abs(dy)){
+            //diagonal line
+            return;
+        }
+
+        if(dx > dy){
+            //low slope
+            return;
+        }
+
+        if(dy > dx){
+            //high slope
+            return;
+        }
+
+
+//
+//        if(dx > dy){
+//            double yStep = dy / (double)dx;
+//            double y = y1;
+//
+//            for(int i = 0; i <= dx; i++){
+//                int x = i + x1;
+//
+//                vram.setPixel(x, (int)y, 255, 255, 255);
+//
+//                y += yStep;
+//            }
+//        }else{
+//            double xStep = dx / (double)dy;
+//            double x = x1;
+//
+//            for(int i = 0; i <= dy; i++){
+//                int y = i + y1;
+//                vram.setPixel((int)x, y, 255, 255, 255);
+//
+//                x += xStep;
+//            }
+//
+//        }
+    }
 }

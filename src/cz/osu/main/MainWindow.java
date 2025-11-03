@@ -26,7 +26,11 @@ public class MainWindow extends JPanel{
 
         initialize();
         
+        vram = new V_RAM(100, 100);
 
+        MyGraphics.drawLine(vram, 10, 10, 40, 80);
+
+        imagePanel.setImage(vram.getImage());
     }
 
     private void initialize(){
