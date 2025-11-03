@@ -259,69 +259,151 @@ public class MyGraphics {
     }
 
     public static void drawLine(V_RAM vram, int x1, int y1, int x2, int y2){
-        //DDA
-        //x2 > x1
-        //y2 > y1
 
-        if(x1 == x2 && y1 == y2){
-            //draw pixel
+        if(x1 == x2 && y1 == y2){//pixel
+            vram.setPixel(x1, y1, 255 ,255, 255);
             return;
         }
 
 
-        if(y1 == y2){
-            //horizontal line
+        if(y1 == y2){//horizontal line
+
+            if(x1 > x2){//swap pixels if in wrong order
+                drawLineHorizontal(vram, x2, y1, x1);
+            }else{
+                drawLineHorizontal(vram, x1, y1, x2);
+            }
             return;
         }
 
+        if(x1 == x2){//vertical line
 
-        if(x1 == x2){
-            //vertical line
+            if(y1 > y2){//swap pixels if in wrong order
+                drawLineVertical(vram, x1, y2, y1);
+            }else{
+                drawLineVertical(vram, x1, y1, y2);
+            }
             return;
         }
 
         int dx = x2 - x1;
         int dy = y2 - y1;
 
-        if(Math.abs(dx) == Math.abs(dy)){
-            //diagonal line
+        if(Math.abs(dx) == Math.abs(dy)){//diagonal line
+            drawLineDiagonal(vram, x1, y1, x2, y2);
             return;
         }
 
-        if(dx > dy){
-            //low slope
+        if(Math.abs(dx) > Math.abs(dy)){//low slope
+
+            if(dx < 0){//swap points to draw from left to right
+                drawLineLowSlope(vram, x2, y2, x1, y1);
+            }else{
+                drawLineLowSlope(vram, x1, y1, x2, y2);
+            }
             return;
         }
 
-        if(dy > dx){
-            //high slope
+        if(Math.abs(dy) > Math.abs(dx)){//high slope
+
+            if(dy < 0){//swap points if in wrong order
+                drawLineHighSlope(vram, x2, y2, x1, y1);
+            }else{
+                drawLineHighSlope(vram, x1, y1, x2, y2);
+            }
             return;
         }
+    }
 
+    private static void drawLineLowSlope(V_RAM vram, int x1, int y1, int x2, int y2){
+        //bresenham
 
+        int p = Math.abs(y2 - y1);
+        int q = x2 - x1;
+
+        int h1 = 2 * p;
+        int h2 = 2 * p - 2 * q;
+        int h = h1 - q;
+
+        int slopeY = (y2 - y1) < 0? -1 : 1;//points up or down
+
+        for(int x = x1, y = y1; x <= x2; x++){
+
+            if(h < 0){
+                h += h1;
+            }else{
+                h += h2;
+                y += slopeY;
+            }
+
+            vram.setPixel(x, y, 255, 255, 255);
+        }
+
+//        //DDA
+//        int distanceX = x2 - x1;
+//        int distanceY = y2 - y1;
 //
-//        if(dx > dy){
-//            double yStep = dy / (double)dx;
-//            double y = y1;
+//        double stepY = distanceY / (double)distanceX;
+//        double y = y1;
 //
-//            for(int i = 0; i <= dx; i++){
-//                int x = i + x1;
-//
-//                vram.setPixel(x, (int)y, 255, 255, 255);
-//
-//                y += yStep;
-//            }
-//        }else{
-//            double xStep = dx / (double)dy;
-//            double x = x1;
-//
-//            for(int i = 0; i <= dy; i++){
-//                int y = i + y1;
-//                vram.setPixel((int)x, y, 255, 255, 255);
-//
-//                x += xStep;
-//            }
-//
+//        for(int x = 0; x <= distanceX; x++, y+= stepY){
+//            vram.setPixel(x + x1, (int)Math.round(y), 255, 255, 255);
 //        }
+    }
+
+    private static void drawLineHighSlope(V_RAM vram, int x1, int y1, int x2, int y2){
+        //bresenham
+
+        int p = y2 - y1;
+        int q = Math.abs(x2 - x1);
+
+        int h1 = - 2 * q;
+        int h2 = 2 * p - 2 * q;
+        int h = p - 2 * q;
+
+        int slopeX = (x2 - x1) < 0? -1 : 1;//points left or right
+
+        for(int y = y1, x = x1; y <= y2; y++){
+            if(h > 0){
+                h += h1;
+            }else{
+                h += h2;
+                x += slopeX;
+            }
+
+            vram.setPixel(x, y, 255, 255, 255);
+        }
+
+//        //DDA
+//        int distanceX = x2 - x1;
+//        int distanceY = y2 - y1;
+//
+//        double stepX = distanceX / (double)distanceY;
+//        double x = x1;
+//
+//        for(int y = 0; y <= distanceY; y++, x+= stepX){
+//            vram.setPixel((int)Math.round(x), y + y1, 255, 255, 255);
+//        }
+    }
+
+    private static void drawLineHorizontal(V_RAM vram, int x1, int y, int x2){
+        for(int x = x1; x <= x2; x++){
+            vram.setPixel(x, y, 255, 255, 255);
+        }
+    }
+
+    private static void drawLineVertical(V_RAM vram, int x, int y1, int y2){
+        for(int y = y1; y <= y2; y++){
+            vram.setPixel(x, y, 255,255,255);
+        }
+    }
+
+    private static void drawLineDiagonal(V_RAM vram, int x1, int y1, int x2, int y2){
+        int slopeX = (x2 - x1) < 0? -1 : 1;
+        int slopeY = (y2 - y1) < 0? -1 : 1;
+
+        for(int x = x1, y = y1; x != x2; x += slopeX, y += slopeY){
+            vram.setPixel(x, y, 255,255,255);
+        }
     }
 }
