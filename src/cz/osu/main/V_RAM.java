@@ -1,5 +1,7 @@
 package cz.osu.main;
 
+import cz.osu.myGraphics.RGB;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -47,6 +49,10 @@ public class V_RAM {
     public void setPixel(int x, int y, int red, int green, int blue){
 
         rawData[y][x] = 255 << 24 | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF);
+    }
+
+    public void setPixel(int x, int y, RGB argb){
+        rawData[y][x] = 255 << 24 | ((argb.red & 0xFF) << 16) | ((argb.green & 0xFF) << 8) | (argb.blue & 0xFF);
     }
 
     public BufferedImage getImage(){

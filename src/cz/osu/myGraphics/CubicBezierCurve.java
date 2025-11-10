@@ -1,6 +1,6 @@
 package cz.osu.myGraphics;
 
-public class QubicBezierCurve {
+public class CubicBezierCurve {
     public Point p0;
     public Point p1;
     public Point p2;
@@ -12,7 +12,7 @@ public class QubicBezierCurve {
     public Point a3 = new Point();
 
 
-    public QubicBezierCurve(Point p0, Point p1, Point p2, Point p3) {
+    public CubicBezierCurve(Point p0, Point p1, Point p2, Point p3) {
         this.p0 = p0;
         this.p1 = p1;
         this.p2 = p2;
@@ -33,8 +33,6 @@ public class QubicBezierCurve {
 
         this.a3.x = -p0.x + 3 * p1.x + (-3) * p2.x + p3.x;
         this.a3.y = -p0.y + 3 * p1.y + (-3) * p2.y + p3.y;
-
-
     }
 
     public Point getPoint(double t){
@@ -45,7 +43,6 @@ public class QubicBezierCurve {
 
         result.x = a0.x + t * a1.x + tt * a2.x + ttt * a3.x;
         result.y = a0.y + t * a1.y + tt * a2.y + ttt * a3.y;
-
 
         return result;
     }

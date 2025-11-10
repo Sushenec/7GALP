@@ -3,6 +3,7 @@ package cz.osu.main;
 import cz.osu.myGraphics.Kernel;
 import cz.osu.myGraphics.MyGraphics;
 import cz.osu.myGraphics.Point;
+import cz.osu.myGraphics.RGB;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -28,8 +29,9 @@ public class MainWindow extends JPanel{
         initialize();
         
         vram = new V_RAM(100, 100);
+        bufferVram = vram.copy();
 
-        MyGraphics.drawCurve(vram, new Point(10, 10), new Point(10, 80), new Point(80, 10), new Point(80, 80));
+
 
         imagePanel.setImage(vram.getImage());
     }
@@ -84,7 +86,15 @@ public class MainWindow extends JPanel{
                     vram = bufferVram.copy();
 
                     //My graphics
+                    Point p0 = new Point(10,10);
+                    Point p1 = new Point(70, 10);
+                    Point p2 = new Point(70,80);
+                    Point p3 = new Point(10, 80);
 
+                    MyGraphics.drawCurve(vram, p0, p1, p2, p3, RGB.darkOrchid, (int)number);
+
+                    vram.setPixel((int)p0.x,(int)p0.y, 255,255,255);
+                    vram.setPixel((int)p3.x, (int)p3.y, 255,255,255);
                     imagePanel.setImage(vram.getImage());
                 }
 

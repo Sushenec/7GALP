@@ -2,6 +2,9 @@ package cz.osu.myGraphics;
 
 import cz.osu.main.V_RAM;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyGraphics {
 
     public static void fill(V_RAM vram, int red, int green, int blue){
@@ -258,16 +261,16 @@ public class MyGraphics {
         }
     }
 
-    public static void drawLine(V_RAM vram, Point p1, Point p2){
+    public static void drawLine(V_RAM vram, Point p1, Point p2, RGB color){
 
-        int x1 = (int)p1.x;
-        int y1 = (int)p1.y;
+        int x1 = (int)Math.round(p1.x);
+        int y1 = (int)Math.round(p1.y);
 
-        int x2 = (int)p2.x;
-        int y2 = (int)p2.y;
+        int x2 = (int)Math.round(p2.x);
+        int y2 = (int)Math.round(p2.y);
 
         if(x1 == x2 && y1 == y2){//pixel
-            vram.setPixel(x1, y1, 255 ,255, 255);
+            vram.setPixel(x1, y1, color);
             return;
         }
 
@@ -275,9 +278,9 @@ public class MyGraphics {
         if(y1 == y2){//horizontal line
 
             if(x1 > x2){//swap pixels if in wrong order
-                drawLineHorizontal(vram, x2, y1, x1);
+                drawLineHorizontal(vram, x2, y1, x1, color);
             }else{
-                drawLineHorizontal(vram, x1, y1, x2);
+                drawLineHorizontal(vram, x1, y1, x2, color);
             }
             return;
         }
@@ -285,9 +288,9 @@ public class MyGraphics {
         if(x1 == x2){//vertical line
 
             if(y1 > y2){//swap pixels if in wrong order
-                drawLineVertical(vram, x1, y2, y1);
+                drawLineVertical(vram, x1, y2, y1, color);
             }else{
-                drawLineVertical(vram, x1, y1, y2);
+                drawLineVertical(vram, x1, y1, y2, color);
             }
             return;
         }
@@ -296,16 +299,16 @@ public class MyGraphics {
         int dy = y2 - y1;
 
         if(Math.abs(dx) == Math.abs(dy)){//diagonal line
-            drawLineDiagonal(vram, x1, y1, x2, y2);
+            drawLineDiagonal(vram, x1, y1, x2, y2, color);
             return;
         }
 
         if(Math.abs(dx) > Math.abs(dy)){//low slope
 
             if(dx < 0){//swap points to draw from left to right
-                drawLineLowSlope(vram, x2, y2, x1, y1);
+                drawLineLowSlope(vram, x2, y2, x1, y1, color);
             }else{
-                drawLineLowSlope(vram, x1, y1, x2, y2);
+                drawLineLowSlope(vram, x1, y1, x2, y2, color);
             }
             return;
         }
@@ -313,27 +316,29 @@ public class MyGraphics {
         if(Math.abs(dy) > Math.abs(dx)){//high slope
 
             if(dy < 0){//swap points if in wrong order
-                drawLineHighSlope(vram, x2, y2, x1, y1);
+                drawLineHighSlope(vram, x2, y2, x1, y1, color);
             }else{
-                drawLineHighSlope(vram, x1, y1, x2, y2);
+                drawLineHighSlope(vram, x1, y1, x2, y2, color);
             }
             return;
         }
     }
 
-    private static void drawLineLowSlope(V_RAM vram, int x1, int y1, int x2, int y2){
+    private static void drawLineLowSlope(V_RAM vram, int x1, int y1, int x2, int y2, RGB color){
         //bresenham
 
         int p = Math.abs(y2 - y1);
         int q = x2 - x1;
 
         int h1 = 2 * p;
-        int h2 = 2 * p - 2 * q;
-        int h = h1 - q;
+        int h2 = h1 - 2 * q;// 2p - 2q
+        int h = h1 - q;// 2p - q
 
         int slopeY = (y2 - y1) < 0? -1 : 1;//points up or down
 
-        for(int x = x1, y = y1; x <= x2; x++){
+        vram.setPixel(x1, y1, color);
+
+        for(int x = x1 + 1, y = y1; x < x2; x++){
 
             if(h < 0){
                 h += h1;
@@ -342,34 +347,38 @@ public class MyGraphics {
                 y += slopeY;
             }
 
-            vram.setPixel(x, y, 255, 255, 255);
+            vram.setPixel(x, y, color);
         }
 
-//        //DDA
+        vram.setPixel(x2, y2, color);
+
+//        DDA
 //        int distanceX = x2 - x1;
 //        int distanceY = y2 - y1;
 //
 //        double stepY = distanceY / (double)distanceX;
 //        double y = y1;
 //
-//        for(int x = 0; x <= distanceX; x++, y+= stepY){
-//            vram.setPixel(x + x1, (int)Math.round(y), 255, 255, 255);
+//        for(int x = x1; x <= x2; x++, y+= stepY){
+//            vram.setPixel(x, (int)Math.round(y), color);
 //        }
     }
 
-    private static void drawLineHighSlope(V_RAM vram, int x1, int y1, int x2, int y2){
+    private static void drawLineHighSlope(V_RAM vram, int x1, int y1, int x2, int y2, RGB color){
         //bresenham
 
         int p = y2 - y1;
         int q = Math.abs(x2 - x1);
 
         int h1 = - 2 * q;
-        int h2 = 2 * p - 2 * q;
-        int h = p - 2 * q;
+        int h2 = 2 * p + h1;// 2p - 2q
+        int h = p + h1;// p - 2q
 
         int slopeX = (x2 - x1) < 0? -1 : 1;//points left or right
 
-        for(int y = y1, x = x1; y <= y2; y++){
+        vram.setPixel(x1, y1, color);
+
+        for(int y = y1 + 1, x = x1; y < y2; y++){
             if(h > 0){
                 h += h1;
             }else{
@@ -377,53 +386,59 @@ public class MyGraphics {
                 x += slopeX;
             }
 
-            vram.setPixel(x, y, 255, 255, 255);
+            vram.setPixel(x, y, color);
         }
 
-//        //DDA
+        vram.setPixel(x2, y2, color);
+
+//        DDA
 //        int distanceX = x2 - x1;
 //        int distanceY = y2 - y1;
 //
 //        double stepX = distanceX / (double)distanceY;
 //        double x = x1;
 //
-//        for(int y = 0; y <= distanceY; y++, x+= stepX){
-//            vram.setPixel((int)Math.round(x), y + y1, 255, 255, 255);
+//        for(int y = y1; y <= y2; y++, x+= stepX){
+//            vram.setPixel((int)Math.round(x), y , color);
 //        }
     }
 
-    private static void drawLineHorizontal(V_RAM vram, int x1, int y, int x2){
+    private static void drawLineHorizontal(V_RAM vram, int x1, int y, int x2, RGB color){
         for(int x = x1; x <= x2; x++){
-            vram.setPixel(x, y, 255, 255, 255);
+            vram.setPixel(x, y, color);
         }
     }
 
-    private static void drawLineVertical(V_RAM vram, int x, int y1, int y2){
+    private static void drawLineVertical(V_RAM vram, int x, int y1, int y2, RGB color){
         for(int y = y1; y <= y2; y++){
-            vram.setPixel(x, y, 255,255,255);
+            vram.setPixel(x, y, color);
         }
     }
 
-    private static void drawLineDiagonal(V_RAM vram, int x1, int y1, int x2, int y2){
+    private static void drawLineDiagonal(V_RAM vram, int x1, int y1, int x2, int y2, RGB color){
         int slopeX = (x2 - x1) < 0? -1 : 1;
         int slopeY = (y2 - y1) < 0? -1 : 1;
 
         for(int x = x1, y = y1; x != x2; x += slopeX, y += slopeY){
-            vram.setPixel(x, y, 255,255,255);
+            vram.setPixel(x, y, color);
         }
     }
 
-    public static void drawCurve(V_RAM vram, Point p0, Point p1, Point p2, Point p3){
-        QubicBezierCurve bezier = new QubicBezierCurve(p0, p1, p2, p3);
+    public static void drawCurve(V_RAM vram, Point p0, Point p1, Point p2, Point p3, RGB color, int steps){
+        CubicBezierCurve bezier = new CubicBezierCurve(p0, p1, p2, p3);
 
-        double step = 1/150f;
-        for(double t = 0; t < 1; t += step){
-            Point thisPoint = bezier.getPoint(t);
-            Point nextPoint = bezier.getPoint(t + step);
+        //first and last points need to be entered separately
+        //because of rounding error in adding doubles when calculating t
+        Point prevPoint = p0;
+        double step = 1d/steps;
+        for(double t = step; t < 1; t += step){
+            Point currentPoint = bezier.getPoint(t);
 
-            drawLine(vram, thisPoint, nextPoint);
+            drawLine(vram, prevPoint, currentPoint, color);
+
+            prevPoint = currentPoint;
         }
-
+        drawLine(vram, prevPoint, p3, color);
     }
 
 
