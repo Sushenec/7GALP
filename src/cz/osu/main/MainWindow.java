@@ -2,6 +2,7 @@ package cz.osu.main;
 
 import cz.osu.myGraphics.Kernel;
 import cz.osu.myGraphics.MyGraphics;
+import cz.osu.myGraphics.Point;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,9 +27,9 @@ public class MainWindow extends JPanel{
 
         initialize();
         
-        vram = new V_RAM(120, 120);
+        vram = new V_RAM(100, 100);
 
-        MyGraphics.drawLine(vram, 10, 110, 70, 40);
+        MyGraphics.drawCurve(vram, new Point(10, 10), new Point(10, 80), new Point(80, 10), new Point(80, 80));
 
         imagePanel.setImage(vram.getImage());
     }
@@ -78,8 +79,12 @@ public class MainWindow extends JPanel{
 
                 if(value != null){
                     double number = value.doubleValue();
+
+                    //Reset vram to original picture
                     vram = bufferVram.copy();
+
                     //My graphics
+
                     imagePanel.setImage(vram.getImage());
                 }
 

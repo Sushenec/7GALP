@@ -258,7 +258,13 @@ public class MyGraphics {
         }
     }
 
-    public static void drawLine(V_RAM vram, int x1, int y1, int x2, int y2){
+    public static void drawLine(V_RAM vram, Point p1, Point p2){
+
+        int x1 = (int)p1.x;
+        int y1 = (int)p1.y;
+
+        int x2 = (int)p2.x;
+        int y2 = (int)p2.y;
 
         if(x1 == x2 && y1 == y2){//pixel
             vram.setPixel(x1, y1, 255 ,255, 255);
@@ -406,4 +412,19 @@ public class MyGraphics {
             vram.setPixel(x, y, 255,255,255);
         }
     }
+
+    public static void drawCurve(V_RAM vram, Point p0, Point p1, Point p2, Point p3){
+        QubicBezierCurve bezier = new QubicBezierCurve(p0, p1, p2, p3);
+
+        double step = 1/150f;
+        for(double t = 0; t < 1; t += step){
+            Point thisPoint = bezier.getPoint(t);
+            Point nextPoint = bezier.getPoint(t + step);
+
+            drawLine(vram, thisPoint, nextPoint);
+        }
+
+    }
+
+
 }
