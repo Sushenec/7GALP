@@ -2,9 +2,6 @@ package cz.osu.myGraphics;
 
 import cz.osu.main.V_RAM;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MyGraphics {
 
     public static void fill(V_RAM vram, int red, int green, int blue){
@@ -261,7 +258,7 @@ public class MyGraphics {
         }
     }
 
-    public static void drawLine(V_RAM vram, Point p1, Point p2, RGB color){
+    public static void drawLine(V_RAM vram, Point2D p1, Point2D p2, RGB color){
 
         int x1 = (int)Math.round(p1.x);
         int y1 = (int)Math.round(p1.y);
@@ -424,15 +421,15 @@ public class MyGraphics {
         }
     }
 
-    public static void drawCurve(V_RAM vram, Point p0, Point p1, Point p2, Point p3, RGB color, int steps){
+    public static void drawCurve(V_RAM vram, Point2D p0, Point2D p1, Point2D p2, Point2D p3, RGB color, int steps){
         CubicBezierCurve bezier = new CubicBezierCurve(p0, p1, p2, p3);
 
         //first and last points need to be entered separately
         //because of rounding error in adding doubles when calculating t
-        Point prevPoint = p0;
+        Point2D prevPoint = p0;
         double step = 1d/steps;
         for(double t = step; t < 1; t += step){
-            Point currentPoint = bezier.getPoint(t);
+            Point2D currentPoint = bezier.getPoint(t);
 
             drawLine(vram, prevPoint, currentPoint, color);
 

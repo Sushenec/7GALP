@@ -2,7 +2,7 @@ package cz.osu.main;
 
 import cz.osu.myGraphics.Kernel;
 import cz.osu.myGraphics.MyGraphics;
-import cz.osu.myGraphics.Point;
+import cz.osu.myGraphics.Point2D;
 import cz.osu.myGraphics.RGB;
 
 import javax.imageio.ImageIO;
@@ -86,10 +86,10 @@ public class MainWindow extends JPanel{
                     vram = bufferVram.copy();
 
                     //My graphics
-                    Point p0 = new Point(10,10);
-                    Point p1 = new Point(70, 10);
-                    Point p2 = new Point(70,80);
-                    Point p3 = new Point(10, 80);
+                    Point2D p0 = new Point2D(10,10);
+                    Point2D p1 = new Point2D(70, 10);
+                    Point2D p2 = new Point2D(70,80);
+                    Point2D p3 = new Point2D(10, 80);
 
                     MyGraphics.drawCurve(vram, p0, p1, p2, p3, RGB.darkOrchid, (int)number);
 
