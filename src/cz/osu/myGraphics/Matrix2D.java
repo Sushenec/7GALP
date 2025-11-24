@@ -5,7 +5,7 @@ public class Matrix2D {
     public double m10, m11, m12;
     public double m20, m21, m22;
 
-    public Matrix2D(){
+    private Matrix2D(){
         m00 = 0;
         m01 = 0;
         m02 = 0;
@@ -52,7 +52,6 @@ public class Matrix2D {
         rotation.m11 = cos;
 
         rotation.m22 = 1;
-
 
         return rotation;
     }

@@ -1,5 +1,7 @@
 package cz.osu.myGraphics;
 
+import java.awt.*;
+
 public class Point2D {
     public double x;
     public double y;
@@ -8,13 +10,20 @@ public class Point2D {
     public Point2D() {
         x = 0;
         y = 0;
-        w = 0;
+        w = 1;
     }
 
     public Point2D(double x, double y) {
         this.x = x;
         this.y = y;
-        this.w = 0;
+        this.w = 1;
+    }
+
+    public Point getPoint(){
+        int newX = (int)Math.round(this.x / this.w);
+        int newY = (int)Math.round(this.y / this.w);
+
+        return new Point(newX, newY);
     }
 
     @Override
