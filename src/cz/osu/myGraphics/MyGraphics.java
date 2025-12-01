@@ -464,9 +464,9 @@ public class MyGraphics {
 
         //creates array based on length of smaller side of bounding rectangle to save memory
         //index of coordinates is offset inside bounding rectangle based on smaller side of bounding rectangle
-        List<Integer>[] coordinates = new ArrayList[distanceSmallerSide + 1];
+        HashSet<Integer>[] coordinates = new HashSet[distanceSmallerSide + 1];
         for (int i = 0; i < distanceSmallerSide + 1; i++) {
-            coordinates[i] = new ArrayList<>();
+            coordinates[i] = new HashSet<>();
         }
 
         //stores into coordinates array min and max coordinates of triangle border within each row or column
