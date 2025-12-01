@@ -1,7 +1,9 @@
 package cz.osu.myGraphics;
 
 public class RGB {
-    public static RGB darkOrchid = new RGB(153, 50, 204);
+    public static RGB DARK_ORCHID = new RGB(153, 50, 204);
+    public static RGB WHITE = new RGB(255, 255, 255);
+
 
     public int red;
     public int green;

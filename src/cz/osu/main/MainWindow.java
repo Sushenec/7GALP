@@ -14,6 +14,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainWindow extends JPanel{
 
@@ -31,13 +33,13 @@ public class MainWindow extends JPanel{
         vram = new V_RAM(100, 100);
         bufferVram = vram.copy();
 
-        Point2D p1 = new Point2D( 10, 10);
+        Point2D p1 = new Point2D( 10, 50);
         Point2D p2 = new Point2D(90, 10);
         Point2D p3 = new Point2D(90, 90);
 
 
-        //MyGraphics.drawTriangle2D(vram, p1, p2, p3, RGB.darkOrchid);
-        MyGraphics.fillTriangle2D(vram, p1, p2, p3);
+        MyGraphics.fillTriangle2D(vram, p1, p2, p3, RGB.DARK_ORCHID);
+        MyGraphics.drawTriangle2D(vram, p1, p2, p3, RGB.WHITE);
 
         imagePanel.setImage(vram.getImage());
     }
@@ -92,15 +94,7 @@ public class MainWindow extends JPanel{
                     vram = bufferVram.copy();
 
                     //My graphics
-                    Point2D p0 = new Point2D(10,10);
-                    Point2D p1 = new Point2D(70, 10);
-                    Point2D p2 = new Point2D(70,80);
-                    Point2D p3 = new Point2D(10, 80);
 
-                    MyGraphics.drawCurve(vram, p0, p1, p2, p3, RGB.darkOrchid, (int)number);
-
-                    vram.setPixel((int)p0.x,(int)p0.y, 255,255,255);
-                    vram.setPixel((int)p3.x, (int)p3.y, 255,255,255);
                     imagePanel.setImage(vram.getImage());
                 }
 

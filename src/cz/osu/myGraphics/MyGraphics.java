@@ -2,6 +2,8 @@ package cz.osu.myGraphics;
 
 import cz.osu.main.V_RAM;
 
+import java.util.*;
+
 public class MyGraphics {
 
     public static void fill(V_RAM vram, int red, int green, int blue){
@@ -444,36 +446,110 @@ public class MyGraphics {
         drawLine(vram , p2, p3, color);
 
     }
-    public static void fillTriangle2D(V_RAM vram, Point2D p1, Point2D p2, Point2D p3){
-        XORPut(vram, p1, p2);
-        XORPut(vram, p1, p3);
-        XORPut(vram, p2, p3);
 
-    }
-    private static void XORPut(V_RAM vram, Point2D p1, Point2D p2){
-        int steps = (int)Math.round(Math.abs(p1.y - p2.y));
-        double step = 1d/steps;
-        Point2D prevPoint = new Point2D(p1.x, p1.y);
+    public static void fillTriangle2D(V_RAM vram, Point2D p1, Point2D p2, Point2D p3, RGB color){
+        //triangle's bounding rectangle
+        int minX = (int)Math.round(Math.min(p1.x, Math.min(p2.x, p3.x)));
+        int maxX = (int)Math.round(Math.max(p1.x, Math.max(p2.x, p3.x)));
+        int minY = (int)Math.round(Math.min(p1.y, Math.min(p2.y, p3.y)));
+        int maxY = (int)Math.round(Math.max(p1.y, Math.max(p2.y, p3.y)));
+        int distanceY = maxY - minY;
+        int distanceX = maxX - minX;
 
-        for(double t = 0; t < 1; t += step ){
-            System.out.println("t = " + t);
-            Point2D A = p1.multiply(1 - t);
-            Point2D B = p2.multiply(t);
-            Point2D thisPoint = A.add(B);
+        //which side of bounding rectangle is smaller
+        boolean lessRowsThanCols = distanceY <= distanceX;
+        int distanceSmallerSide = lessRowsThanCols? distanceY : distanceX;
+        int minSmallerSide = lessRowsThanCols? minY: minX;
+        int maxSmallerSide = lessRowsThanCols? maxY: maxX;
 
-            int x = (int)Math.round(thisPoint.x);
-            int y = (int)Math.round(thisPoint.y);
+        //creates array based on length of smaller side of bounding rectangle to save memory
+        //index of coordinates is offset inside bounding rectangle based on smaller side of bounding rectangle
+        List<Integer>[] coordinates = new ArrayList[distanceSmallerSide + 1];
+        for (int i = 0; i < distanceSmallerSide + 1; i++) {
+            coordinates[i] = new ArrayList<>();
+        }
 
-            if(y != (int)Math.round(prevPoint.y)){
-                while(x < vram.getWidth()-1){
-                    RGB pixel = new RGB(vram.getPixel(x,y));
+        //stores into coordinates array min and max coordinates of triangle border within each row or column
+            //row or column orientation is based on bounding rectangle smaller side
+        getCoordinates(lessRowsThanCols, p1, p2).forEach((u, v) -> coordinates[u - minSmallerSide].add(v) );
+        getCoordinates(lessRowsThanCols, p1, p3).forEach((u, v) -> coordinates[u - minSmallerSide].add(v) );
+        getCoordinates(lessRowsThanCols, p2, p3).forEach((u, v) -> coordinates[u - minSmallerSide].add(v) );
 
-                    vram.setPixel(x, y, pixel.red ^255, pixel.green ^ 255, pixel.blue ^ 255);
-                    x++;
+        //fills triangle based on previous row or column orientation
+        if(lessRowsThanCols){
+            for(int y = minSmallerSide; y <= maxSmallerSide; y++){
+                int min = Collections.min(coordinates[y - minSmallerSide]);
+                int max = Collections.max(coordinates[y - minSmallerSide]);
+
+                for(int x = min; x <= max; x++) {
+                    vram.setPixel(x, y, color.red, color.green, color.blue);
                 }
             }
-            prevPoint = thisPoint;
+        }else{
+            for(int x = minSmallerSide; x <= maxSmallerSide; x++){
+                int min = Collections.min(coordinates[x - minSmallerSide]);
+                int max = Collections.max(coordinates[x - minSmallerSide]);
+
+                for(int y = min; y <= max; y++) {
+                    vram.setPixel(x, y, color.red, color.green, color.blue);
+                }
+            }
         }
+    }
+
+    private static HashMap<Integer, Integer> getCoordinates(boolean lessRowsThanCols,Point2D p1, Point2D p2){
+        int x1 = (int)Math.round(p1.x);
+        int y1 = (int)Math.round(p1.y);
+
+        int x2 = (int)Math.round(p2.x);
+        int y2 = (int)Math.round(p2.y);
+
+        if((x2 < x1) || (y2 < y1)){//points are in wrong order
+            x1 = (int)Math.round(p2.x);
+            y1 = (int)Math.round(p2.y);
+
+            x2 = (int)Math.round(p1.x);
+            y2 = (int)Math.round(p1.y);
+        }
+
+        int distanceX = x2 - x1;
+        int distanceY = y2 - y1;
+
+        HashMap<Integer, Integer> coordinates = new HashMap<>();
+
+        if(distanceX > distanceY){// low slope
+
+            double stepY = distanceY / (double)distanceX;
+            double y = y1;
+
+            if(lessRowsThanCols){
+                for(int x = x1; x <= x2; x++, y+= stepY){
+                    coordinates.put((int)Math.round(y), x);
+                }
+
+            }else{
+                for(int x = x1; x <= x2; x++, y+= stepY){
+                    coordinates.put(x, (int)Math.round(y));
+                }
+            }
+
+
+        }else{//high slope
+
+            double stepX = distanceX / (double)distanceY;
+            double x = x1;
+            if(lessRowsThanCols){
+                for(int y = y1; y <= y2; y++, x+= stepX){
+                    coordinates.put(y ,(int)Math.round(x));
+                }
+            }else{
+                for(int y = y1; y <= y2; y++, x+= stepX){
+                    coordinates.put((int)Math.round(x), y);
+                }
+            }
+
+        }
+        return coordinates;
     }
 
 }

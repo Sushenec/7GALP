@@ -26,20 +26,6 @@ public class Point2D {
         return new Point(newX, newY);
     }
 
-    public Point2D multiply(double multiplicator){
-        Point2D newPoint = new Point2D(this.x, this.y);
-        newPoint.x *= multiplicator;
-        newPoint.y *= multiplicator;
-        return newPoint;
-    }
-
-    public Point2D add(Point2D a){
-        Point2D newPoint = new Point2D(this.x, this.y);
-        newPoint.x += a.x;
-        newPoint.y += a.y;
-        return newPoint;
-    }
-
     @Override
     public String toString() {
         return "(" + x + " ;" + y + " ;" + w + ")";
