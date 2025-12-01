@@ -438,5 +438,42 @@ public class MyGraphics {
         drawLine(vram, prevPoint, p3, color);
     }
 
+    public static void drawTriangle2D(V_RAM vram, Point2D p1, Point2D p2, Point2D p3, RGB color){
+        drawLine(vram , p1, p2, color);
+        drawLine(vram , p1, p3, color);
+        drawLine(vram , p2, p3, color);
+
+    }
+    public static void fillTriangle2D(V_RAM vram, Point2D p1, Point2D p2, Point2D p3){
+        XORPut(vram, p1, p2);
+        XORPut(vram, p1, p3);
+        XORPut(vram, p2, p3);
+
+    }
+    private static void XORPut(V_RAM vram, Point2D p1, Point2D p2){
+        int steps = (int)Math.round(Math.abs(p1.y - p2.y));
+        double step = 1d/steps;
+        Point2D prevPoint = new Point2D(p1.x, p1.y);
+
+        for(double t = 0; t < 1; t += step ){
+            System.out.println("t = " + t);
+            Point2D A = p1.multiply(1 - t);
+            Point2D B = p2.multiply(t);
+            Point2D thisPoint = A.add(B);
+
+            int x = (int)Math.round(thisPoint.x);
+            int y = (int)Math.round(thisPoint.y);
+
+            if(y != (int)Math.round(prevPoint.y)){
+                while(x < vram.getWidth()-1){
+                    RGB pixel = new RGB(vram.getPixel(x,y));
+
+                    vram.setPixel(x, y, pixel.red ^255, pixel.green ^ 255, pixel.blue ^ 255);
+                    x++;
+                }
+            }
+            prevPoint = thisPoint;
+        }
+    }
 
 }

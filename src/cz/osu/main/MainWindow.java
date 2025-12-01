@@ -31,7 +31,13 @@ public class MainWindow extends JPanel{
         vram = new V_RAM(100, 100);
         bufferVram = vram.copy();
 
+        Point2D p1 = new Point2D( 10, 10);
+        Point2D p2 = new Point2D(90, 10);
+        Point2D p3 = new Point2D(90, 90);
 
+
+        //MyGraphics.drawTriangle2D(vram, p1, p2, p3, RGB.darkOrchid);
+        MyGraphics.fillTriangle2D(vram, p1, p2, p3);
 
         imagePanel.setImage(vram.getImage());
     }
